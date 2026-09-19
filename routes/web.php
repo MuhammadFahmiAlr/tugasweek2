@@ -1,6 +1,18 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProdukController;
+use App\Http\Controllers\LaporanPenjualanController;
+use App\Http\Controllers\BookController;
+
+// ============================================================
+// ACARA 13: Controller
+// ============================================================
+Route::get('/book', [BookController::class, 'index']);
+Route::get('/book/{id}', [BookController::class, 'show']);
+Route::post('/book', [BookController::class, 'store']);
+Route::put('/book/{id}', [BookController::class, 'update']);
+Route::delete('/book/{id}', [BookController::class, 'destroy']);
 
 // Langkah 1 & 4: Rute Halaman Utama dengan View dan Data
 Route::get('/', function () {
@@ -10,10 +22,16 @@ Route::get('/', function () {
     ]);
 });
 
-// Langkah 1: Rute dengan Parameter Wajib & Opsional
-Route::get('/produk/{id}', function ($id) {
-    return 'Menampilkan data produk dengan ID: ' . $id;
-});
+// ============================================================
+// ACARA 11: MVC & Controller
+// ============================================================
+
+// Routing menuju ProdukController
+Route::get('/produk', [ProdukController::class, 'index']);
+Route::get('/produk/{id}', [ProdukController::class, 'show']);
+
+// Latihan Mandiri: Single Action Controller (Invokable)
+Route::get('/laporan', LaporanPenjualanController::class);
 
 Route::get('/produk/cari/{nama?}', function ($nama = null) {
     if ($nama) {
@@ -51,4 +69,59 @@ Route::get('/produk-toko', function () {
     ];
 
     return view('daftar_produk', ['produk' => $produk]);
+});
+
+// ============================================================
+// ACARA 9: Route (Part 1)
+// ============================================================
+
+// 1. Basic Routing
+Route::get('/hello', function () {
+    return "Hello, World!";
+});
+
+// 2. Route Parameters
+// Parameter Wajib
+Route::get('/user/{id}', function ($id) {
+    return "User ID: " . $id;
+});
+
+// Parameter Opsional (dengan nilai default "Guest")
+Route::get('/user/{name?}', function ($name = "Guest") {
+    return "Hello, " . $name;
+});
+
+// 3. Named Routes
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->name('dashboard');
+
+// ============================================================
+// ACARA 10: Route (Part 2)
+// ============================================================
+
+// 1. Route Groups (prefix 'admin')
+// Catatan: prefix 'admin' sudah ada di atas, jadi kita gunakan komentar
+// untuk menunjukkan contoh dari modul. Rute ini akan menimpa/menambah
+// pada prefix admin yang sudah ada.
+Route::prefix('admin')->group(function () {
+    Route::get('/dashboard', function () {
+        return "Admin Dashboard";
+    });
+
+    Route::get('/users', function () {
+        return "Admin Users";
+    });
+});
+
+// 2. Route Methods
+Route::get('/data', function () { return "GET Request"; });
+Route::post('/data', function () { return "POST Request"; });
+Route::put('/data', function () { return "PUT Request"; });
+Route::delete('/data', function () { return "DELETE Request"; });
+Route::patch('/data', function () { return "PATCH Request"; });
+
+// 3. Fallback Routes (harus diletakkan paling bawah)
+Route::fallback(function () {
+    return "404 Not Found";
 });
